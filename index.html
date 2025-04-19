@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Updated Title -->
+    <title>Alireza Tad - Digital Business Card</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Added Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* CSS Styles remain exactly the same as the provided source */
+        :root {
+            --primary-color: #264b3b; /* Dark Green */
+            --accent-color: #e9a43c; /* Gold */
+            --background-color: #f4f4f4; /* Light Grey Background */
+            --card-bg-color: rgba(255, 255, 255, 0.85); /* Slightly more opaque white */
+            --text-color: #333;
+            --subtle-text-color: #555;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--background-color); /* Changed background */
+            position: relative;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .card-container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .profile-images {
+            display: flex;
+            justify-content: center;
+            height: 80px;
+            margin-bottom: 0;
+        }
+
+        .image-container {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            position: relative;
+            border: 3px solid; /* Border color set below */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff; /* Ensure background is white */
+        }
+
+        .image-container.logo {
+             /* Changed border color */
+            border-color: var(--primary-color);
+            margin-right: -30px; /* Adjusted overlap */
+            z-index: 1;
+        }
+
+        .image-container.profile {
+             /* Changed border color */
+            border-color: var(--accent-color);
+            z-index: 2;
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .glass-box {
+            backdrop-filter: blur(10px) saturate(150%);
+            -webkit-backdrop-filter: blur(10px) saturate(150%);
+            background-color: var(--card-bg-color); /* Updated background color */
+            border-radius: 16px;
+            /* Changed border to subtle green */
+            border: 1px solid rgba(38, 75, 59, 0.15);
+             /* Added accent border top */
+            border-top: 3px solid var(--accent-color);
+            padding: 30px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1); /* Softened shadow */
+            transition: transform 0.3s ease;
+        }
+
+        .glass-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .header-box {
+            text-align: center;
+            margin-top: -20px;
+            padding-top: 50px; /* Increased padding to account for taller image container */
+            padding-bottom: 20px; /* Added padding bottom for spacing */
+        }
+
+        .name {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--text-color); /* Standard text color */
+            margin-bottom: 5px;
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--primary-color); /* Use primary color for title */
+            margin-bottom: 5px;
+        }
+
+        .company {
+            font-size: 16px;
+            color: var(--subtle-text-color);
+            /* Removed bottom margin as product list is gone */
+        }
+
+        .info-boxes {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .info-box {
+            display: flex;
+            flex-direction: column;
+            gap: 18px; /* Increased gap slightly */
+            height: 100%;
+            /* Ensure boxes try to maintain similar height */
+             justify-content: flex-start; /* Align items to the top */
+        }
+
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .info-item i { /* Style for Font Awesome icons */
+            width: 24px;
+            height: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--primary-color); /* Use primary color for icons */
+            font-size: 20px; /* Adjust icon size */
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .info-text {
+            font-size: 16px;
+            color: var(--subtle-text-color); /* Use subtle text color */
+            word-break: break-word;
+            line-height: 1.5; /* Adjusted line height */
+        }
+
+        .info-text a {
+            color: var(--primary-color); /* Use primary color for links */
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .info-text a:hover {
+            color: var(--accent-color); /* Use accent color for hover */
+        }
+
+        /* Make address link look like normal text initially */
+        .info-text a.address-link {
+             color: var(--subtle-text-color); /* Match surrounding text */
+             text-decoration: none; /* Remove underline */
+        }
+        /* Apply link styling on hover */
+        .info-text a.address-link:hover {
+             color: var(--accent-color);
+             text-decoration: none; /* Keep underline off or add it if preferred */
+        }
+
+
+        .qr-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .qr-title {
+            font-size: 16px;
+            color: var(--primary-color); /* Use primary color */
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        #qrcode {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--background-color); /* Light border */
+        }
+
+        @media (max-width: 600px) {
+            .info-boxes {
+                grid-template-columns: 1fr;
+            }
+
+            .glass-box {
+                padding: 25px 20px;
+            }
+
+            .header-box {
+                padding-top: 45px; /* Adjust for mobile */
+            }
+
+            .name {
+                font-size: 24px;
+            }
+
+            .title {
+                font-size: 16px;
+            }
+
+            .info-text {
+                font-size: 14px;
+            }
+
+             .info-item i {
+                font-size: 18px;
+             }
+        }
+    </style>
+</head>
+<body>
+    <!-- Container remains the same -->
+    <div class="card-container">
+        <!-- Profile Images -->
+        <div class="profile-images">
+            <div class="image-container logo">
+                <!-- Make sure logo.png is in the same directory -->
+                <img src="logo.png" alt="Company Logo" class="profile-image">
+            </div>
+            <div class="image-container profile">
+                 <!-- IMPORTANT: Replace pic.png with Alireza Tad's profile picture -->
+                 <!-- Keep the filename as pic.png or change it if you use a different file -->
+                <img src="pic.png" alt="Profile Picture" class="profile-image">
+            </div>
+        </div>
+
+        <!-- Name and Title Box - UPDATED -->
+        <div class="glass-box header-box">
+            <h1 class="name">Alireza Tad</h1>             <!-- UPDATED Name -->
+            <h2 class="title">Sale Manager</h2>          <!-- UPDATED Title -->
+            <h2 class="company">@ Hasti Aryan Tamin</h2> <!-- Company Name (Same) -->
+        </div>
+
+        <!-- Contact Information Boxes -->
+        <div class="info-boxes">
+            <!-- Phone, Email, LinkedIn Box -->
+            <div class="glass-box info-box">
+                 <!-- First Phone Number - UPDATED -->
+                <div class="info-item">
+                    <i><i class="fas fa-phone-alt"></i></i>
+                    <span class="info-text">
+                        <!-- Note: tel: link doesn't standardly support extensions, but displayed correctly -->
+                        <a href="tel:02158179000">021-58179000 (EXT: 415)</a>
+                    </span>
+                </div>
+
+                 <!-- Second Phone Number - ADDED -->
+                 <div class="info-item">
+                    <!-- Using same phone icon as requested -->
+                    <i><i class="fas fa-phone-alt"></i></i>
+                    <span class="info-text">
+                        <a href="tel:+989126236473">0912 623 6473</a> <!-- Used common local format for display, international for link -->
+                    </span>
+                </div>
+
+                <!-- Email - UPDATED -->
+                <div class="info-item">
+                    <i><i class="fas fa-envelope"></i></i>
+                    <span class="info-text">
+                        <a href="mailto:Tad.Alireza@HastiTamin.com">Tad.Alireza@HastiTamin.com</a>
+                    </span>
+                </div>
+
+                <!-- LinkedIn - UPDATED to homepage link as requested -->
+                <div class="info-item">
+                    <i><i class="fab fa-linkedin-in"></i></i>
+                    <span class="info-text">
+                        <a href="https://www.linkedin.com/" target="_blank">
+                            Linkedin
+                        </a>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Website and Address Box (Same as source) -->
+            <div class="glass-box info-box">
+                 <!-- Website (Same) -->
+                 <div class="info-item">
+                    <i><i class="fas fa-globe"></i></i>
+                    <span class="info-text">
+                        <a href="http://www.hastitaamin.com" target="_blank">hastitaamin.com</a>
+                    </span>
+                </div>
+
+                <!-- Address (Same) -->
+                <div class="info-item">
+                    <i><i class="fas fa-map-marker-alt"></i></i>
+                    <span class="info-text">
+                        <a href="https://maps.app.goo.gl/sPTYcb9MDT5SevFj6" target="_blank" class="address-link">
+                            No. 8, Afarin Alley, Alvand St., Argentina Sq., Tehran, Iran
+                        </a>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- QR Code Box (Same as source) -->
+        <div class="glass-box qr-box">
+            <div class="qr-title">Scan to view our product catalogue</div>
+            <div id="qrcode"></div>
+            <span class="info-text">
+                <a href="https://uploadkon.ir/uploads/e8b918_25CATALOG-RUSSIA-1403-11-28.pdf" target="_blank">
+                    Download Catalogue
+                </a>
+            </span>
+        </div>
+    </div>
+
+    <script>
+        // Generate QR code for the catalogue PDF (Remains the same)
+        window.onload = function() {
+            new QRCode(document.getElementById("qrcode"), {
+                text: "https://uploadkon.ir/uploads/e8b918_25CATALOG-RUSSIA-1403-11-28.pdf",
+                width: 120,
+                height: 120,
+                colorDark: "#264b3b",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        };
+    </script>
+</body>
+</html>
